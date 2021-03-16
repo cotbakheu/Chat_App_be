@@ -86,12 +86,14 @@ module.exports = {
     //update User
     updateUser: async (req, res) => {
         try {
+            console.log('disini')
             const body = req.body
             const id = req.params.id
             const detail = await modelDetail(id)
             // const data = {...body, image: req.file.filename};
             if (req.file) {
                 const data = { ...body, image: req.file.filename };
+                console.log(data)
                 if (detail[0].image === 'default_photo.png') {
                     modelUpdate(data, id)
                         .then((response) => {
@@ -159,6 +161,7 @@ module.exports = {
     },
     getAllUsers: (req,res)=> {
         const data = req.body;
+        // console.log(data)
         modelAllUsers(data).then((response)=>{
             success(res, response, {}, 'Get all users success')
         }).catch((err)=>{

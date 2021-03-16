@@ -28,10 +28,22 @@ module.exports = {
         })
     },
     getFriend: (data) => {
-        const sql = `SELECT users.id As id, users.room_id, users.email, users.username, users.name, users.image, users.bio, users.phone, users.lat, users.lng, friend.status FROM users INNER JOIN (friend INNER JOIN friend friend1 ON friend.target_id = friend1.user_id) ON friend.user_id=${data.id} AND users.id<>${data.id} WHERE friend.status LIKE '%${data.filter}%' GROUP BY users.id`
+        const sql = `SELECT users.id, users.image, users.room_id, users.bio, users.username, users.name, users.phone, users.lng, users.lat FROM friend LEFT JOIN users ON (friend.user_id = users.id OR friend.target_id = users.id ) WHERE (users.id != ${data.id} AND (friend.target_id = ${data.id} OR friend.user_id = ${data.id})) GROUP BY users.id`
         return new Promise((resolve, reject)=>{
             connection.query(sql, (err, result)=>{
                 if(err) {
+                    reject(new Error(err))
+                } else {
+                    resolve(result)
+                }
+            })
+        })
+    },
+    addFriend: (data) => {
+        const sql = `INSERT INTO friend (user_id, target_id, status) VALUES ('${data.user_id}','${data.target_id}', '1'),('${data.target_id}','${data.user_id}', '1')`
+        return new Promise ((resolve, reject)=> {
+            connection.query(sql, (err, result)=>{
+                if (err){
                     reject(new Error(err))
                 } else {
                     resolve(result)

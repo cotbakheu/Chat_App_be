@@ -20,6 +20,7 @@ module.exports = {
             code: 500,
             message,
         }
+        console.log(response)
         // res.json(response)
         res.json(response)
     }

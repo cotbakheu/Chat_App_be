@@ -1,7 +1,8 @@
 const socketio = require('socket.io')
 const { getChat,
         insertChat,
-        getFriend } = require('./model')
+        getFriend,
+        addFriend } = require('./model')
 const { notFound,
         failed,
         success } = require('../helper/response')
@@ -73,6 +74,24 @@ module.exports = (server) => {
               //error insert chat
               console.log(err)
             })
+        }),
+        socket.on('addFriend', (data)=>{
+          addFriend(data).then((response)=>{
+            // console.log(response)
+            const newData = {
+              id : data.user_id,
+              filter : '%'
+            }
+            getFriend(newData).then((response)=>{
+              io.to(data.roomId).emit('resGetFriend', response)
+            }).catch((err)=>{
+              //error get friend
+              console.log(err)
+            })
+          }).catch((err)=>{
+            //error input friend
+            console.log(err)
+          })
         })
       })
 }

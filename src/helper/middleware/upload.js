@@ -13,7 +13,7 @@ const multerStorage = multer.diskStorage({
 
 const upload = multer({
     storage: multerStorage,
-    limits: { fieldSize: 1 * 1024 * 1024 },
+    limits: { fileSize: 1 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         const ext = (/\.(gif|jpe?g|png)$/i).test(`${Date.now()}${path.extname(file.originalname)}`);
         if (ext) {
@@ -28,7 +28,7 @@ const singleUpload = (req, res, next) => {
     const single = upload.single('image');
     single(req, res, (err) => {
         if (err) {
-            failed(res, 'Upload Failed', err)
+            failed(res, err.message)
         } else {
             next();
         }
