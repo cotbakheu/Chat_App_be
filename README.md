@@ -21,7 +21,7 @@ We provide database with four tables:
 2. Chat
 3. Friend
 
-Database Scheme soon
+![db_scheme](https://i.ibb.co/hVLsCMC/db-scheme.jpg)
 
 ### Installing
 
@@ -31,7 +31,7 @@ Here is few step to run the server of Payment Web:
 2. Open your terminal and head to your project directory
 3. Clone this repository
 ```
-git clone https://github.com/cotbakheu/Chat_App_be
+git clone https://github.com/cotbakheu/OnTalk_Backend
 ``` 
 4. Set ".env" file in root :
     - `PORT`        : fill for set the API running port
@@ -65,4 +65,4 @@ node app.js
 ```
 
 ## Frontend Repository
-[Frontend OnTalk Web Aplication](https://github.com/cotbakheu/Chat_App_fe)
+[Frontend OnTalk Web Aplication](https://github.com/cotbakheu/OnTalk_Frontend)
