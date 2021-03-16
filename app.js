@@ -5,6 +5,9 @@ const http = require('http')
 const socket = require('./src/socket/socket')
 const userRoute = require('./src/route/users')
 
+//history
+const history = require('connect-history-api-fallback')
+
 const app = express()
 
 
@@ -14,6 +17,12 @@ app.use(bodyParser.json())
 app.use(userRoute)
 // open route for public image
 app.use('/images', express.static('./public/images'))
+
+app.use(history({
+    verbose: true
+}))
+
+app.use('/', express.static('./dist'))
 
 const server = http.createServer(app);
 socket(server)
