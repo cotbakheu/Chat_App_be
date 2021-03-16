@@ -6,21 +6,19 @@ module.exports = {
             pagination,
             data
         }
-        res.status(200).json(response)
+        res.json(response)
     },
-    notFound: (res, message, data) => {
+    notFound: (res, message) => {
         const response = {
             code: 404,
-            message,
-            data
+            message
         }
-        res.status(404).json(response)
+        res.json(response)
     },
-    failed: (res, message, data) => {
+    failed: (res, message) => {
         const response = {
             code: 500,
             message,
-            data
         }
         // res.json(response)
         res.json(response)

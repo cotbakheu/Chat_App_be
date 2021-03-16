@@ -60,9 +60,9 @@ module.exports = {
             })
         })
     },
-    modelAllUsers: (id) => {
+    modelAllUsers: (data) => {
         return new Promise((resolve, reject) => {
-            connection.query(`SELECT * FROM users WHERE id != '${id}'`, (err, result) => {
+            connection.query(`SELECT * FROM users WHERE id != '${data.id}' AND username LIKE '%${data.filter}%'`, (err, result) => {
                 if (err) {
                     reject(new Error(err));
                 } else {

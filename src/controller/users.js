@@ -3,11 +3,11 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 
 const { modelReg,
-    modelCheck,
-    modelUpdate,
-    modelDetail,
-    mdDeletePhoto,
-    modelAllUsers } = require('../model/users');
+        modelCheck,
+        modelUpdate,
+        modelDetail,
+        mdDeletePhoto,
+        modelAllUsers } = require('../model/users');
 
 const { failed,
     success,
@@ -26,12 +26,20 @@ module.exports = {
                         email: response[0].email
                     };
                     const token = jwt.sign(userData, process.env.JWT_SECRET);
-                    success(res, {token, id: response[0].id, username: response[0].username }, {}, 'login succesful')
+                    success(res, 
+                            {   token, 
+                                id: response[0].id, 
+                                username: response[0].username,
+                                name: response[0].name,
+                                room_id: response[0].room_id
+                            }, 
+                            {}, 
+                            'login succesful')
                 } else {
                     failed(res, "Wrong Password", {})
                 }
             } else {
-                failed(res, "Email hasn't been registered", {})
+                failed(res, "Email not valid", {})
             }
         }).catch((err) => {
             failed(res, "Server Error", {})
@@ -41,27 +49,28 @@ module.exports = {
     userReg: (req, res) => {
         const body = req.body;
         // const name = body.email.match(/^([^@]*)@/)[1];
+        const roomId = Math.random() * 10000
         const data = {
             email: body.email,
             password: body.password,
             username: body.username,
-            image: 'default_photo.png'
+            name: body.username,
+            image: 'default_photo.png',
+            room_id: Math.ceil(roomId),
+            phone: '+62',
+            lat: '-6.175175158426828', 
+            lng: '106.6788734408048'
         }
         modelCheck(body.email).then(async (response) => {
             if (response.length >= 1) {
-                failed(res, "Email has been registered", {})
+                failed(res, "Email has been registered")
             } else {
-                if (!body.email || !body.password) {
-                    failed(res, 'Empty Field, All Field Required', {})
+                if (!body.email || !body.password || !body.username) {
+                    failed(res, 'Empty Field, All Field Required')
                 } else {
                     const salt = await bcrypt.genSalt();
                     const password = await bcrypt.hash(body.password, salt);
-                    const user = {
-                        email: data.email,
-                        username: data.username,
-                        image: data.image,
-                        password
-                    };
+                    const user = {...data, password };
                     modelReg(user).then(() => {
                         success(res, user, {}, 'Register Success')
                     }).catch((err) => {
@@ -88,7 +97,7 @@ module.exports = {
                         .then((response) => {
                             success(res, response, {}, 'Update User success')
                         }).catch((err) => {
-                            failed(res, 'Update User Failed!', err.message)
+                            failed(res, err.message)
                         })
                 } else {
                     const path = `./public/images/${detail[0].image}`
@@ -97,31 +106,19 @@ module.exports = {
                         .then((response) => {
                             success(res, response, {}, 'Update User success')
                         }).catch(() => {
-                            failed(res, 'Update user Usr Failed', err.message)
+                            failed(res, err.message)
                         })
                 }
             } else {
-                const data = { ...body, image: 'default_photo.png' };
-                if (detail[0].image === 'default_photo.png') {
-                    modelUpdate(data, id)
+                    modelUpdate(body, id)
                         .then((response) => {
                             success(res, response, {}, 'Update User success')
                         }).catch((err) => {
-                            failed(res, 'All textfield is required!', err.message)
+                            failed(res, err.message)
                         })
-                } else {
-                    const path = `./public/images/${detail[0].image}`
-                    fs.unlinkSync(path)
-                    modelUpdate(data, id)
-                        .then((response) => {
-                            success(res, response, {}, 'Update User success')
-                        }).catch(() => {
-                            failed(res, 'Can\'t connect to database', err.message)
-                        })
-                }
             }
         } catch (error) {
-            failed(res, 'Error server', error.message)
+            failed(res, error.message)
         }
     },
     //get Detail User
@@ -161,12 +158,11 @@ module.exports = {
         }
     },
     getAllUsers: (req,res)=> {
-        console.log(req.params.id)
-        modelAllUsers(req.params.id).then((response)=>{
-            console.log(response)
+        const data = req.body;
+        modelAllUsers(data).then((response)=>{
             success(res, response, {}, 'Get all users success')
         }).catch((err)=>{
-            failed(res, 'Internal server error', err)
+            failed(res, 'Internal server error')
         })
     }
 }
